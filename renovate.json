@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended"],
+  "enabledManagers": ["terraform", "pre-commit"],
+  "packageRules": [
+    {
+      "matchManagers": ["terraform"],
+      "groupName": "terraform providers",
+      "automerge": false
+    },
+    {
+      "matchManagers": ["pre-commit"],
+      "groupName": "pre-commit hooks",
+      "automerge": true
+    }
+  ]
+}
