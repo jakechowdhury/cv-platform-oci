@@ -1,0 +1,58 @@
+---
+# .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-merge-conflict
+      - id: detect-private-key
+
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      - id: detect-secrets
+        args: ['--baseline', '.secrets.baseline']
+
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.96.0
+    hooks:
+      - id: terraform_fmt
+        args:
+          - --hook-config=--tf-path=tofu
+          - --tf-init-args=-no-color
+      - id: terraform_validate
+        args:
+          - --args=-no-color
+          - --hook-config=--tf-path=tofu
+      - id: terragrunt_validate
+        args:
+          - --hook-config=--tf-path=tofu
+          - --tf-init-args=-backend=false
+        files: ^terraform/[^/]+/terragrunt\.hcl$
+
+  - repo: https://github.com/bridgecrewio/checkov
+    rev: 3.2.526
+    hooks:
+      - id: checkov
+        args:
+          - --framework=terraform
+          - --config-file=.checkov.yaml
+
+  - repo: https://github.com/terraform-docs/terraform-docs
+    rev: "v0.21.0"
+    hooks:
+      - id: terraform-docs-system
+        args: ["markdown", "--output-file", "README.md", "terraform/k8s-oke"]
+      - id: terraform-docs-system
+        args: ["markdown", "--output-file", "README.md", "terraform/network"]
+      - id: terraform-docs-system
+        args: ["markdown", "--output-file", "README.md", "terraform/oke"]
+
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      - id: yamllint
+        args: [-c=.yamllint.yaml]

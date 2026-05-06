@@ -1,0 +1,26 @@
+global:
+  domain: ""
+
+server:
+  replicas: 1
+  service:
+    type: ClusterIP
+  # insecure mode — Traefik handles the external TLS termination via passthrough
+  # ArgoCD still serves its own self-signed cert internally
+  extraArgs:
+    - --insecure
+
+repoServer:
+  replicas: 1
+
+applicationSet:
+  replicas: 1
+
+redis-ha:
+  enabled: false
+
+redis:
+  enabled: true
+
+controller:
+  replicas: 1

@@ -1,0 +1,7 @@
+skip-check:
+  - CKV_OCI_8    # No flow logs — personal project, no compliance requirement
+  - CKV_OCI_17   # Public API endpoint — intentional, locked to var.my_ip_cidr
+  - CKV_OCI_2    # Public worker IPs — required for ARM free-tier OKE
+  - CKV2_OCI_2   # protocol=all for OKE intra-VCN; source locked to VCN CIDR
+  - CKV2_OCI_6   # PSP removed in k8s 1.25; using PSA namespace labels instead
+  - CKV_OCI_21   # Stateful rules correct for OKE; stateless needs manual ephemeral port egress
