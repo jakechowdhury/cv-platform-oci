@@ -1,5 +1,3 @@
-# ── VCN ───────────────────────────────────────────────────────────────────────
-
 resource "oci_core_vcn" "cv_platform" {
   compartment_id = var.compartment_id
   cidr_blocks    = ["10.0.0.0/16"]
@@ -7,16 +5,12 @@ resource "oci_core_vcn" "cv_platform" {
   dns_label      = "cvplatform"
 }
 
-# ── Internet Gateway ──────────────────────────────────────────────────────────
-
 resource "oci_core_internet_gateway" "cv_platform" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.cv_platform.id
   display_name   = "cv-platform-igw"
   enabled        = true
 }
-
-# ── Route Table (public) ──────────────────────────────────────────────────────
 
 resource "oci_core_route_table" "public" {
   compartment_id = var.compartment_id
@@ -29,8 +23,6 @@ resource "oci_core_route_table" "public" {
     network_entity_id = oci_core_internet_gateway.cv_platform.id
   }
 }
-
-# ── Security List (worker nodes) ──────────────────────────────────────────────
 
 resource "oci_core_security_list" "workers" {
   compartment_id = var.compartment_id
@@ -60,7 +52,7 @@ resource "oci_core_security_list" "workers" {
     description = "Traefik HTTPS NodePort — home IP only"
   }
 
-  # SSH from your IP only
+  # SSH from home IP only
   ingress_security_rules {
     source   = var.my_ip_cidr
     protocol = "6"
@@ -70,8 +62,6 @@ resource "oci_core_security_list" "workers" {
     }
   }
 }
-
-# ── Public Subnet (worker nodes) ──────────────────────────────────────────────
 
 resource "oci_core_subnet" "workers" {
   compartment_id    = var.compartment_id
@@ -83,8 +73,6 @@ resource "oci_core_subnet" "workers" {
   security_list_ids = [oci_core_security_list.workers.id]
 }
 
-# ── Security List (API endpoint) ──────────────────────────────────────────────
-
 resource "oci_core_security_list" "api" {
   compartment_id = var.compartment_id
   vcn_id         = oci_core_vcn.cv_platform.id
@@ -95,7 +83,7 @@ resource "oci_core_security_list" "api" {
     protocol    = "all"
   }
 
-  # Allow kubectl from your IP
+  # Allow kubectl from home IP
   ingress_security_rules {
     source   = var.my_ip_cidr
     protocol = "6"
@@ -111,8 +99,6 @@ resource "oci_core_security_list" "api" {
     protocol = "all"
   }
 }
-
-# ── Public Subnet (API endpoint) ──────────────────────────────────────────────
 
 resource "oci_core_subnet" "api" {
   compartment_id             = var.compartment_id
